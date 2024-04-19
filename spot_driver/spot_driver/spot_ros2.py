@@ -1016,6 +1016,8 @@ class SpotROS(Node):
             callback_group=self.group,
         )
 
+        self.enable_safe_mode()
+
     def take_lease_callback(self, request: Trigger.Request, response: Trigger.Response) -> Trigger.Response:
         self.get_logger().info("Incoming request to take a new lease.")
         if self.spot_wrapper is None:
@@ -1032,6 +1034,30 @@ class SpotROS(Node):
             response.message = ""
 
         return response
+
+    def enable_safe_mode(self) -> None:
+        """Make the body avoid obstacles."""
+        if self.spot_wrapper is None:
+            # response.success = False
+            # response.message = "Spot wrapper is undefined"
+            # return response
+            return
+        try:
+            mobility_params = self.spot_wrapper.get_mobility_params()
+            mobility_params.obstacle_params.disable_vision_body_obstacle_avoidance = False
+            mobility_params.obstacle_params.disable_vision_foot_obstacle_body_assist = False
+            mobility_params.obstacle_params.disable_vision_foot_obstacle_avoidance = False
+            mobility_params.obstacle_params.disable_vision_foot_constraint_avoidance = False
+            mobility_params.obstacle_params.disable_vision_negative_obstacles = False
+            mobility_params.obstacle_params.obstacle_avoidance_padding = 0.25
+            self.spot_wrapper.set_mobility_params(mobility_params)
+            # response.success = True
+            # response.message = "Success"
+            return
+        except Exception as e:
+            # response.success = False
+            # response.message = "Error:{}".format(e)
+            return
 
     def metrics_callback(self, results: Any) -> None:
         """Callback for when the Spot Wrapper gets new metrics data.
