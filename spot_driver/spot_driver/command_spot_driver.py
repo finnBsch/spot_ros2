@@ -21,15 +21,15 @@ from tf_transformations import quaternion_from_euler
 from spot_msgs.action import NavigateTo, Trajectory  # type: ignore
 from spot_msgs.srv import ListGraph, SetLocomotion, SetVelocity  # type: ignore
 
-
 class CommandSpotDriver(Node):
     def __init__(self, node_name: str, **kwargs: Any) -> None:
+        print("AA")
         try:
             super().__init__(node_name, **kwargs)
             self.declare_parameter("command", "")
 
             self.command = self.get_parameter("command").value
-
+            self.get_logger().info(self.command)
             self.claim_client = self.create_client(Trigger, "claim")
             self.release_client = self.create_client(Trigger, "release")
             self.power_on_client = self.create_client(Trigger, "power_on")
@@ -219,6 +219,7 @@ class CommandSpotDriver(Node):
 
     def stand(self) -> Optional[Trigger.Response]:
         try:
+            self.get_logger().info(f"STAND: Tryingclaim")
             req = Trigger.Request()
             future = self.stand_client.call_async(req)
             if not wait_for_future(future, context=self.context):
@@ -439,6 +440,7 @@ class CommandSpotDriver(Node):
 
     def do_command(self) -> None:
         try:
+            print("A")
             self.timer.cancel()
 
             # upload_dir = "/home/tompe/spot/547_534_525.walk"
@@ -446,6 +448,8 @@ class CommandSpotDriver(Node):
 
             if self.command == "claim":
                 resp = self.claim()
+                print("abcs")
+                self.get_logger().info("CLAIM")
                 return
 
             if self.command == "release":
@@ -548,7 +552,11 @@ class CommandSpotDriver(Node):
         except Exception as exc:
             self.get_logger().error(f"EXCEPTION: {type(exc)} - {exc}")
 
-
 @ros_process.main(prebaked=False)
 def main() -> None:
+    print("AAA")
     ros_process.spin(CommandSpotDriver, "command_spot_driver")
+
+
+if __name__ == "__main__":
+    exit(main())

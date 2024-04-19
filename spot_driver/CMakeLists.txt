@@ -180,6 +180,12 @@ install(
   )
 install(
   PROGRAMS
+  spot_driver/teleop_spot.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME teleop_spot
+  )
+install(
+  PROGRAMS
   spot_driver/spot_ros2.py
   DESTINATION lib/${PROJECT_NAME}
   RENAME spot_ros2
