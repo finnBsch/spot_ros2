@@ -186,6 +186,12 @@ install(
   )
 install(
   PROGRAMS
+  spot_driver/vel_driver.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME velocity_driver
+  )
+install(
+  PROGRAMS
   spot_driver/spot_ros2.py
   DESTINATION lib/${PROJECT_NAME}
   RENAME spot_ros2
